@@ -1,4 +1,4 @@
-import BrokageNotesRepository from '../../repositories/BrokageNotesRepository'
+import BrokageNotesRepository from '../../repositories/BrokageNoteRepository'
 
 import {
   BrokageNote,
@@ -25,8 +25,8 @@ export default class ExtractOrdersUseCase {
     this.converter = new TickerConverter()
   }
 
-  public execute(item: BrokageNote) {
-    const data = this.brokageNotesRepository.retrieveDataFromNote(item)
+  public async execute(item: BrokageNote) {
+    const data = await this.brokageNotesRepository.retrieveData(item)
     const cleanedRows = this.filterRowsWithOrdersInformation(data.rows)
     return this.extractOrderFromRows(cleanedRows, item.date)
   }
@@ -42,7 +42,7 @@ export default class ExtractOrdersUseCase {
 
   private extractOrderFromRow(row: string, date: string): Order {
     const type = this.identifyOrderType(row)
-    const cleanedRow = this.cleanUnusedExpression(row)
+    const cleanedRow = this.cleanUnusedExpresssion(row)
     const properties = this.getFinancialProperties(cleanedRow)
     return {
       type,
@@ -55,7 +55,8 @@ export default class ExtractOrdersUseCase {
     return row.startsWith('C') ? 'buy' : 'sell'
   }
 
-  private cleanUnusedExpression(row: string) {
+  private cleanUnusedExpresssion(row: string) {
+    row = row.substring(1, row.length).replace('#', '')
     for (let i = 0; i < ExtractOrdersUseCase.UNUSED_EXPRESSIONS.length; i++) {
       row = row.replace(ExtractOrdersUseCase.UNUSED_EXPRESSIONS[i], '')
     }

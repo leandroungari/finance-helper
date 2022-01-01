@@ -1,17 +1,20 @@
-import express, { Request } from 'express'
-import cors from 'cors'
-import ExtractOrdersController from './useCases/ExtractOrdersUseCase/ExtractOrdersController'
+import Application from './core/Application'
 
 
-const app = express()
-app.use(cors())
+import OrdersRouter from './routers/OrdersRouter'
 
-app.get('/', (request: Request, response) => {
-  const controller = new ExtractOrdersController(request, response)
+const app = new Application()
+app
+  .register(OrdersRouter)
+  .start()
+/*
+app.post('/', () => {
+  const controller = new ExtractOrdersController()
   controller.handle()
 })
 
 
 app.listen(8000, () => {
   console.log('the server has started at port 8000')
-})
+})*/
+
