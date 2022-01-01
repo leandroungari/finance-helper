@@ -1,0 +1,16 @@
+version: '3.1'
+
+services:
+
+  db-service:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: #preencha a senha aqui
+    ports:
+      - 5432:5432
+    volumes:
+    - data-postgres-finance:/var/lib/postgresql/data
+
+volumes:
+  data-postgres-finance:
