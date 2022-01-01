@@ -1,5 +1,6 @@
 export type BrokageNote = {
   date: string
+  wallet: string
 }
 
 export type FinancialProperties = {

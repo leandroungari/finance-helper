@@ -12,6 +12,7 @@ datasource db {
 
 model Order {
   id            Int         @id() @default(autoincrement())
+  wallet        String      @db.VarChar(50) @default("")
   type          String      @db.Char()
   description   String      @db.VarChar(30)
   quantity      Float       @db.Real

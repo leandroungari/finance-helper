@@ -30,7 +30,7 @@ export default class ExtractOrdersUseCase {
     const data = await this.brokageNotesRepository.retrieveData(item)
     const cleanedRows = this.filterRowsWithOrdersInformation(data.rows)
     const orders = this.extractOrderFromRows(cleanedRows, item.date)
-    await this.ordersRepository.registerOrders(orders)
+    await this.ordersRepository.registerOrders(orders, item.wallet)
     return orders;
   }
 

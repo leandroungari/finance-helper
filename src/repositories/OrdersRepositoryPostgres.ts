@@ -11,7 +11,7 @@ export default class OrdersRepositoryPostgres
     super()
   }
 
-  async registerOrders(orders: Order[]): Promise<boolean> {
+  async registerOrders(orders: Order[], wallet: string): Promise<boolean> {
     try {
       const items = orders.map((element) => ({
         date: new Date(element.date),
@@ -19,7 +19,8 @@ export default class OrdersRepositoryPostgres
         quantity: element.quantity,
         unitaryPrice: element.unitaryPrice,
         totalPrice: element.totalPrice,
-        type: element.type === 'buy' ? 'B' : 'S'
+        type: element.type === 'buy' ? 'B' : 'S',
+        wallet
       }))
 
       const { count } = await this.connection.order.createMany({ data: items })
