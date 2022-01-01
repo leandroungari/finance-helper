@@ -1,10 +1,10 @@
+import Order, { OrderType } from '../../entities/Order'
 import BrokageNotesRepository from '../../repositories/BrokageNoteRepository'
+import OrdersRepository from '../../repositories/OrdersRepository'
 
 import {
   BrokageNote,
   FinancialProperties,
-  Order,
-  OrderType,
 } from './ExtractOrdersDTO'
 
 import TickerConverter from './TickerConverter'
@@ -20,7 +20,8 @@ export default class ExtractOrdersUseCase {
   private converter: TickerConverter
 
   constructor(
-    private brokageNotesRepository: BrokageNotesRepository
+    private brokageNotesRepository: BrokageNotesRepository,
+    private ordersRepository: OrdersRepository
   ) {
     this.converter = new TickerConverter()
   }
@@ -28,7 +29,9 @@ export default class ExtractOrdersUseCase {
   public async execute(item: BrokageNote) {
     const data = await this.brokageNotesRepository.retrieveData(item)
     const cleanedRows = this.filterRowsWithOrdersInformation(data.rows)
-    return this.extractOrderFromRows(cleanedRows, item.date)
+    const orders = this.extractOrderFromRows(cleanedRows, item.date)
+    await this.ordersRepository.registerOrders(orders)
+    return orders;
   }
 
   private filterRowsWithOrdersInformation(rows: string[]) {
@@ -44,11 +47,14 @@ export default class ExtractOrdersUseCase {
     const type = this.identifyOrderType(row)
     const cleanedRow = this.cleanUnusedExpresssion(row)
     const properties = this.getFinancialProperties(cleanedRow)
-    return {
+    return new Order(
+      properties.description,
+      properties.unitaryPrice,
+      properties.quantity,
+      properties.totalPrice,
       type,
       date,
-      ...properties
-    }
+    )
   }
 
   private identifyOrderType(row: string): OrderType {
