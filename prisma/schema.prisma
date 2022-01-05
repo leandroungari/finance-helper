@@ -12,7 +12,7 @@ datasource db {
 
 model Order {
   id            Int         @id() @default(autoincrement())
-  wallet        String      @db.VarChar(50) @default("")
+  wallet        String      @db.VarChar(30) @default("")
   type          String      @db.Char()
   description   String      @db.VarChar(30)
   quantity      Float       @db.Real
@@ -21,4 +21,22 @@ model Order {
   date          DateTime    @db.Date
   createAt      DateTime?   @db.Timestamp() @default(now())
   updateAt      DateTime?   @db.Timestamp()
+}
+
+model Wallet {
+  id            String      @id @db.VarChar(30)
+  owner         String      @db.VarChar(100)
+  createAt      DateTime    @db.Timestamp() @default(now())
+  positions     Position[]
+}
+
+
+model Position {
+  id            Int         @id @default(autoincrement())
+  wallet        Wallet      @relation(fields: [walletId], references: [id])
+  walletId      String 
+  description   String      @db.VarChar(30)
+  quantity      Float       @db.Real()
+  averageCost   Float       @db.Real()
+  currentPrice  Float       @db.Real()
 }
