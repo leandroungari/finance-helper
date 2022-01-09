@@ -1,12 +1,7 @@
-export type BrokageNote = {
-  date: string
-}
-
-export type BrokageNoteData = {
-  rows: string[]
-}
+import Order from '../entities/Order'
+import Wallet from '../entities/Wallet'
 
 export default interface BrokageNoteRepository {
 
-  retrieveData(note: BrokageNote): Promise<BrokageNoteData>
+  extractOrders(wallet: Wallet, date: string): Promise<Order[]>
 }

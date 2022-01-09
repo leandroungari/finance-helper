@@ -77,23 +77,23 @@ export default class Router {
     }
   }
 
-  public get(name: string, action: (req: Request, res: Response) => Promise<any> | any) {
+  public get(name: string, action: (req: Request<any>, res: Response) => Promise<any> | any) {
     this.handler('get', name, action)
   }
 
-  public post(name: string, action: (req: Request, res: Response) => Promise<any> | any) {
+  public post(name: string, action: (req: Request<any>, res: Response) => Promise<any> | any) {
     this.handler('post', name, action)
   }
 
-  public put(name: string, action: (req: Request, res: Response) => Promise<any> | any) {
+  public put(name: string, action: (req: Request<any>, res: Response) => Promise<any> | any) {
     this.handler('put', name, action)
   }
 
-  public patch(name: string, action: (req: Request, res: Response) => Promise<any> | any) {
+  public patch(name: string, action: (req: Request<any>, res: Response) => Promise<any> | any) {
     this.handler('patch', name, action)
   }
 
-  public delete(name: string, action: (req: Request, res: Response) => Promise<any> | any) {
+  public delete(name: string, action: (req: Request<any>, res: Response) => Promise<any> | any) {
     this.handler('delete', name, action)
   }
 

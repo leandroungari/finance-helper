@@ -1,7 +1,7 @@
 
-export default abstract class Controller<T = void> {
+export default abstract class Controller {
 
   constructor() {}
 
-  abstract handle(data: T): Promise<any>
+  abstract handle(): Promise<any>
 }

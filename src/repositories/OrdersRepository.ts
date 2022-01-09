@@ -1,6 +1,7 @@
 import Order from '../entities/Order'
+import Wallet from '../entities/Wallet'
 
 export default interface OrdersRepository {
 
-  registerOrders(orders: Order[], wallet: string): Promise<boolean>
+  save(wallet: Wallet, orders: Order[]): Promise<boolean>
 }
