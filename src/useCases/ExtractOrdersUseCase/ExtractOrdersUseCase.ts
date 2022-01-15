@@ -1,6 +1,6 @@
 import Order from '../../entities/Order'
 import Wallet from '../../entities/Wallet'
-import BrokageNotesRepository from '../../repositories/BrokageNoteRepository'
+import BrokageNotesFileRepository from '../../repositories/BrokageNotesFileRepository'
 import OrdersRepository from '../../repositories/OrdersRepository'
 import PositionsRepository from '../../repositories/PositionsRepository'
 
@@ -8,7 +8,7 @@ import PositionsRepository from '../../repositories/PositionsRepository'
 export default class ExtractOrdersUseCase {
 
   constructor(
-    private brokageNotesRepository: BrokageNotesRepository,
+    private brokageNotesFileRepository: BrokageNotesFileRepository,
     private ordersRepository: OrdersRepository,
     private positionsRepository: PositionsRepository
   ) { }
@@ -22,7 +22,7 @@ export default class ExtractOrdersUseCase {
   }
 
   private async extractOrdersFromNote(wallet: Wallet, date: string) {
-    return await this.brokageNotesRepository.extractOrders(wallet, date)
+    return await this.brokageNotesFileRepository.extractOrders(wallet, date)
   }
 
   private async updatePositionsInWallet(wallet: Wallet, orders: Order[]) {

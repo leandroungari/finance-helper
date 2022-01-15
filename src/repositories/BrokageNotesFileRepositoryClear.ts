@@ -1,14 +1,15 @@
+import { UploadedFile } from 'express-fileupload'
 import { readFileSync } from 'fs'
 import pdf from 'pdf-parse'
 import Order, { OrderType } from '../entities/Order'
 import Wallet from '../entities/Wallet'
 import { FinancialProperties } from '../useCases/ExtractOrdersUseCase/ExtractOrdersDTO'
-import BrokageNoteRepository from './BrokageNoteRepository'
+import BrokageNotesFileRepository from './BrokageNotesFileRepository'
 import TickerConverter from './TickerConverter'
 
-export default class BrokageNoteRepositoryFile
-  implements BrokageNoteRepository {
-  
+export default class BrokageNotesFileRepositoryClear
+  implements BrokageNotesFileRepository {
+
   private converter: TickerConverter
 
   constructor() {
@@ -32,7 +33,7 @@ export default class BrokageNoteRepositoryFile
 
   async extractRows(wallet: Wallet, date: string): Promise<string[]> {
     const directory = process.env.BROKAGE_NOTES_DIR
-    const path = `${directory}/${wallet.id}/${date}.pdf`
+    const path = `${directory}/${wallet.getId()}/${date}.pdf`
     const input = readFileSync(path)
     const result = await pdf(input)
     return result.text.split('\n')
@@ -71,8 +72,8 @@ export default class BrokageNoteRepositoryFile
 
   private cleanUnusedExpresssion(row: string) {
     row = row.substring(1, row.length).replace('#', '')
-    for (let i = 0; i < BrokageNoteRepositoryFile.UNUSED_EXPRESSIONS.length; i++) {
-      row = row.replace(BrokageNoteRepositoryFile.UNUSED_EXPRESSIONS[i], '')
+    for (let i = 0; i < BrokageNotesFileRepositoryClear.UNUSED_EXPRESSIONS.length; i++) {
+      row = row.replace(BrokageNotesFileRepositoryClear.UNUSED_EXPRESSIONS[i], '')
     }
     return row
   }
@@ -101,5 +102,19 @@ export default class BrokageNoteRepositoryFile
       totalPrice
     }
   }
+
+  async upload(walletId: string, files: UploadedFile[]): Promise<string[]> {
+    try {
+      const dates = []
+      for (const file of files) {
+        await file.mv(`${process.env.BROKAGE_NOTES_DIR}/${walletId}/${file.name}`)
+        dates.push(file.name)
+      }
+      return dates
+    } catch(err) {
+      throw err
+    }
+  }
+
 
 }

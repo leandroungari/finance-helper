@@ -28,6 +28,7 @@ model Wallet {
   owner         String      @db.VarChar(100)
   createAt      DateTime    @db.Timestamp() @default(now())
   positions     Position[]
+  notes         BrokageNotes[]
 }
 
 
@@ -40,4 +41,12 @@ model Position {
   averageCost             Float       @db.Real()
   currentPrice            Float       @db.Real()
   @@unique([walletId, description])
+}
+
+model BrokageNotes {
+  id                      Int         @id @default(autoincrement())
+  wallet                  Wallet      @relation(fields: [walletId], references: [id])
+  walletId                String      @db.VarChar(30)
+  date                    DateTime    @db.Date
+  processed               String      @db.VarChar(20)     
 }

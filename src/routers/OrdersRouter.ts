@@ -10,8 +10,8 @@ type ExtractOrderDTO = {
 }
 
 router.post('/', async (req: Request<ExtractOrderDTO>, res) => {
-  const controller = new ExtractOrdersController(req.body.wallet, req.body.date)
-  return await controller.handle()
+  const controller = new ExtractOrdersController()
+  return await controller.handle(req.body.wallet, req.body.date)
 })
 
 
