@@ -27,7 +27,7 @@ export default class Application {
   }
 
   start() {
-    this.app.listen(8000, () => {
+    this.app.listen(process.env.PORT, () => {
       console.log('the server is running')
     })
   }

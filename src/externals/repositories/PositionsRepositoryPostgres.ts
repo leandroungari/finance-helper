@@ -1,4 +1,4 @@
-import Position from '../entities/Position'
+import Position from '../../entities/Position'
 import Postgres from './connection/Postgres'
 import PositionsRepository from './PositionsRepository'
 

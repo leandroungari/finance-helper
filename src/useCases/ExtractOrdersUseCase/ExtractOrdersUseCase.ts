@@ -1,8 +1,8 @@
 import Order from '../../entities/Order'
 import Wallet from '../../entities/Wallet'
-import BrokageNotesFileRepository from '../../repositories/BrokageNotesFileRepository'
-import OrdersRepository from '../../repositories/OrdersRepository'
-import PositionsRepository from '../../repositories/PositionsRepository'
+import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
+import OrdersRepository from '../../externals/repositories/OrdersRepository'
+import PositionsRepository from '../../externals/repositories/PositionsRepository'
 
 
 export default class ExtractOrdersUseCase {

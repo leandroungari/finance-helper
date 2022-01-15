@@ -1,9 +1,9 @@
 import { UploadedFile } from 'express-fileupload'
 import { readFileSync } from 'fs'
 import pdf from 'pdf-parse'
-import Order, { OrderType } from '../entities/Order'
-import Wallet from '../entities/Wallet'
-import { FinancialProperties } from '../useCases/ExtractOrdersUseCase/ExtractOrdersDTO'
+import Order, { OrderType } from '../../entities/Order'
+import Wallet from '../../entities/Wallet'
+import { FinancialProperties } from '../../useCases/ExtractOrdersUseCase/ExtractOrdersDTO'
 import BrokageNotesFileRepository from './BrokageNotesFileRepository'
 import TickerConverter from './TickerConverter'
 

@@ -1,8 +1,8 @@
 import { UploadedFile } from 'express-fileupload'
-import BrokageNotesFileRepository from '../../repositories/BrokageNotesFileRepository'
-import BrokageNotesFileRepositoryClear from '../../repositories/BrokageNotesFileRepositoryClear'
-import BrokageNotesRepository from '../../repositories/BrokageNotesRepository'
-import BrokageNotesRepositoryPostgres from '../../repositories/BrokageNotesRepositoryPostgres'
+import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
+import BrokageNotesFileRepositoryClear from '../../externals/repositories/BrokageNotesFileRepositoryClear'
+import BrokageNotesRepository from '../../externals/repositories/BrokageNotesRepository'
+import BrokageNotesRepositoryPostgres from '../../externals/repositories/BrokageNotesRepositoryPostgres'
 import UploadBrokageNotesUseCase from './UploadBrokageNotesUseCase'
 
 export default class UploadBrokageNotesController {

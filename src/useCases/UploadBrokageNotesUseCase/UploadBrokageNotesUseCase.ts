@@ -1,6 +1,6 @@
 import { UploadedFile } from 'express-fileupload'
-import BrokageNotesFileRepository from '../../repositories/BrokageNotesFileRepository'
-import BrokageNotesRepository from '../../repositories/BrokageNotesRepository'
+import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
+import BrokageNotesRepository from '../../externals/repositories/BrokageNotesRepository'
 
 export default class UploadBrokageNotesUseCase {
   

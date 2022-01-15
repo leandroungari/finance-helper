@@ -1,6 +1,6 @@
 import { UploadedFile } from 'express-fileupload'
-import Order from '../entities/Order'
-import Wallet from '../entities/Wallet'
+import Order from '../../entities/Order'
+import Wallet from '../../entities/Wallet'
 
 export default interface BrokageNotesFileRepository {
 

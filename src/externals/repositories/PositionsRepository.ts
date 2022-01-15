@@ -1,4 +1,4 @@
-import Position from '../entities/Position'
+import Position from '../../entities/Position'
 
 export default interface PositionsRepository {
   save(wallet: string, position: Position): Promise<boolean>;
