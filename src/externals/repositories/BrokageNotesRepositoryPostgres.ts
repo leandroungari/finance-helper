@@ -38,14 +38,18 @@ export default class BrokageNotesRepositoryPostgres
   }
 
 
-  async getNotProcessedNotes(walletId: string): Promise<Date[]> {
+  async getNotProcessedNotes(walletId: string, limit: number): Promise<Date[]> {
     let dates: Date[] = []
     try {
       const result = await this.connection.brokageNotes.findMany({
         where: {
           processed: BrokageNoteStatus.NOT_PROCESSED,
           walletId: walletId
-        }
+        },
+        orderBy: {
+          date: 'asc'
+        },
+        take: limit
       })
       dates = result.map((item) => item.date)
     } catch(err) {
