@@ -1,5 +1,3 @@
-import Order from '../../entities/Order'
-import Wallet from '../../entities/Wallet'
 import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
 import BrokageNotesRepository from '../../externals/repositories/BrokageNotesRepository'
 import OrdersRepository from '../../externals/repositories/OrdersRepository'
@@ -25,7 +23,8 @@ export default class ExtractOrdersFromPendingBrokageNotesUseCase {
   }
 
   public async execute(walletId: string) {
-    const dates = await this.brokageNotesRepository.getNotProcessedNotes(walletId)
+    const maxLimit = Number(process.env.MAX_NOTES_PER_EXECUTION ?? 5)
+    const dates = await this.brokageNotesRepository.getNotProcessedNotes(walletId, maxLimit)
     const result: Date[] = []
     for(const date of dates) {
       await this.extractOrdersUseCase.execute(walletId, date.toISOString().split('T')[0])

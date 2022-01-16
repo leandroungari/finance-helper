@@ -40,6 +40,10 @@ model Position {
   quantity                Float       @db.Real()
   averageCost             Float       @db.Real()
   currentPrice            Float       @db.Real()
+  balance                 Float       @db.Real() @default(0)
+  totalSold               Float       @db.Real() @default(0)
+  firstInvestment         DateTime?   @db.Date
+  lastInvestment          DateTime?   @db.Date
   @@unique([walletId, description])
 }
 

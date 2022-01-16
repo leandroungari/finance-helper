@@ -1,3 +1,4 @@
+import { OrderType } from './Order'
 import Position from './Position'
 
 export default class Wallet {
@@ -34,22 +35,39 @@ export default class Wallet {
   }
 
 
-  public addNewInvestment(ticker: string, quantity: number, averagePrice: number) {
-    let isNewInvestiment: boolean;
+  public addNewInvestment(ticker: string, quantity: number, averagePrice: number, type: OrderType) {
+    let isNewInvestiment: boolean = false
     let newPosition: Position
-    if (this.positions === undefined) throw new Error('The positions were not loaded;')
-    const index = this.positions.findIndex((item) => item.getTicker() === ticker)
-    if(index !== -1) {
-      const position = this.positions[index]
-      const newTotalQuantity = position.getQuantity() + quantity
-      const newAverageCost = (position.getTotalCost() + quantity * averagePrice) / newTotalQuantity
-      isNewInvestiment = false
-      newPosition = new Position(ticker, newTotalQuantity, newAverageCost)
-      this.positions[index] = newPosition
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    if (type === 'buy') {
+      const index = this.positions.findIndex((item) => item.getTicker() === ticker)
+      if (index !== -1) {
+        const position = this.positions[index]
+        const newTotalQuantity = position.getQuantity() + quantity
+        const newAverageCost = (position.getTotalCost() + quantity * averagePrice) / newTotalQuantity
+        isNewInvestiment = false
+        newPosition = new Position(ticker, newTotalQuantity, newAverageCost)
+        this.positions[index] = newPosition
+      } else {
+        isNewInvestiment = true
+        newPosition = new Position(ticker, quantity, averagePrice)
+        this.positions.push(newPosition)
+      }
     } else {
-      isNewInvestiment = true
-      newPosition = new Position(ticker, quantity, averagePrice)
-      this.positions.push(newPosition)
+      const index = this.positions.findIndex((item) => item.getTicker() === ticker)
+      if (index !== -1) {
+        const position = this.positions[index]
+        newPosition = new Position(
+          ticker, 
+          position.getQuantity() - quantity,
+          averagePrice
+        )
+        const soldValue = quantity * averagePrice
+        newPosition.setTotalSold(position.getTotalSold() + soldValue)
+        newPosition.setBalance(position.getBalance() + quantity * (averagePrice - position.getAverageCost()))
+      } else {
+        throw new Error('The asset was not found.')
+      }
     }
     return {
       isNewInvestiment,

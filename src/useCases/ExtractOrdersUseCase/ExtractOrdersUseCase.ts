@@ -30,11 +30,11 @@ export default class ExtractOrdersUseCase {
     wallet.setPositions(positions)
     for (const order of orders) {
       const { isNewInvestiment, position } = wallet
-        .addNewInvestment(order.getDescription(), order.getQuantity(), order.getUnitaryPrice())
+        .addNewInvestment(order.getDescription(), order.getQuantity(), order.getUnitaryPrice(), order.getType())
       if (isNewInvestiment) {
-        await this.positionsRepository.save(wallet.getId(), position)
+        await this.positionsRepository.save(wallet.getId(), position, new Date(order.getDate()))
       } else {
-        await this.positionsRepository.update(wallet.getId(), position)
+        await this.positionsRepository.update(wallet.getId(), position, new Date(order.getDate()))
       }
     }
   }
