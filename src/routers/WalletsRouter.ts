@@ -1,10 +1,17 @@
 import { UploadedFile } from 'express-fileupload'
 import { BadRequest } from '../core/http'
 import Router from '../core/Router'
+import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
 
 const router = new Router('/wallets')
+
+router.post('/', async(req, res) => {
+  const data = req.body
+  const controller = new CreateWalletController();
+  return await controller.handle(data)
+})
 
 router.post('/:walletId/brokage-notes', async (req, res) => {
   const { walletId } = req.params
