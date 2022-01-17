@@ -70,7 +70,8 @@ export default class BrokageNotesRepositoryPostgres
         date
       }))
       await this.connection.brokageNotes.createMany({
-        data: items
+        data: items,
+        skipDuplicates: true
       })
     } catch (err) {
       throw err
