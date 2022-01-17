@@ -95,6 +95,17 @@ export default class BrokageNotesFileRepositoryClear
       quantity = Number(value.substring(0, size))
       unitaryPrice = Number(value.substring(size, splitPoint + 3).replace(',', '.'))
     }
+    if (Number.isNaN(quantity)) {
+      quantity = Number(value.substring(1, 2))
+      unitaryPrice = Number(value.substring(2, splitPoint + 3).replace(',', '.'))
+      totalPrice = Number(value.substring(splitPoint + 3, value.length).replace(',', '.'))
+      size = 1
+      while (Math.abs(quantity * unitaryPrice - totalPrice) >= 0.01) {
+        size++
+        quantity = Number(value.substring(0, size))
+        unitaryPrice = Number(value.substring(size, splitPoint + 3).replace(',', '.'))
+      }
+    }
     return {
       description,
       quantity,
@@ -111,7 +122,7 @@ export default class BrokageNotesFileRepositoryClear
         dates.push(file.name)
       }
       return dates
-    } catch(err) {
+    } catch (err) {
       throw err
     }
   }

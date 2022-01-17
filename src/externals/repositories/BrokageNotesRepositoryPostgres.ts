@@ -16,21 +16,21 @@ export default class BrokageNotesRepositoryPostgres
     super()
   }
 
-  async markNotesAsProcessed(walletId: string, dates: Date[]): Promise<boolean> {
+  async markNotesAsProcessed(walletId: string, date: Date): Promise<boolean> {
     try {
-      await this.connection.brokageNotes.updateMany({
+      await this.connection.brokageNotes.update({
         where: {
-          walletId: walletId,
-          date: {
-            in: dates,
+          walletId_date: {
+            walletId: walletId,
+            date: date
           }
         },
         data: {
           processed: BrokageNoteStatus.DONE
         }
       })
-    } catch(error) {
-      throw new Error(`Fail to update status of brokage notes as processed: ${error}`)
+    } catch (error) {
+      throw new Error(`Fail to update status of brokage notes as processed: ${error} - ${date}`)
     } finally {
       this.disconnect()
     }
@@ -52,7 +52,7 @@ export default class BrokageNotesRepositoryPostgres
         take: limit
       })
       dates = result.map((item) => item.date)
-    } catch(err) {
+    } catch (err) {
       throw new Error(`Fail to retrive not-processed brokage notes: ${err}`)
     } finally {
       this.disconnect()
@@ -72,7 +72,7 @@ export default class BrokageNotesRepositoryPostgres
       await this.connection.brokageNotes.createMany({
         data: items
       })
-    } catch(err) {
+    } catch (err) {
       throw err
     } finally {
       this.disconnect()

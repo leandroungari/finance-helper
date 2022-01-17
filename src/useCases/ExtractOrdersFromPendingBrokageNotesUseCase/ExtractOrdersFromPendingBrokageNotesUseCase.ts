@@ -28,9 +28,9 @@ export default class ExtractOrdersFromPendingBrokageNotesUseCase {
     const result: Date[] = []
     for(const date of dates) {
       await this.extractOrdersUseCase.execute(walletId, date.toISOString().split('T')[0])
+      await this.brokageNotesRepository.markNotesAsProcessed(walletId, date)
       result.push(date)
     }
-    await this.brokageNotesRepository.markNotesAsProcessed(walletId, result)
     return result.map((date) => date.toISOString().split('T')[0])
   }
 

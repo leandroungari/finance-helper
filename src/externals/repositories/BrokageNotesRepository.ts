@@ -5,5 +5,5 @@ export default interface BrokageNotesRepository {
 
   getNotProcessedNotes(walletId: string, limit: number): Promise<Date[]>
 
-  markNotesAsProcessed(walletId: string, dates: Date[]): Promise<boolean>
+  markNotesAsProcessed(walletId: string, date: Date): Promise<boolean>
 }

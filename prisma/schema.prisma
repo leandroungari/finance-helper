@@ -53,4 +53,5 @@ model BrokageNotes {
   walletId                String      @db.VarChar(30)
   date                    DateTime    @db.Date
   processed               String      @db.VarChar(20)     
+  @@unique([walletId, date])
 }
