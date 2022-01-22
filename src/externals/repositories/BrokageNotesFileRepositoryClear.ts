@@ -99,10 +99,10 @@ export default class BrokageNotesFileRepositoryClear
       quantity = Number(value.substring(1, 2))
       unitaryPrice = Number(value.substring(2, splitPoint + 3).replace(',', '.'))
       totalPrice = Number(value.substring(splitPoint + 3, value.length).replace(',', '.'))
-      size = 1
+      size = 2
       while (Math.abs(quantity * unitaryPrice - totalPrice) >= 0.01) {
         size++
-        quantity = Number(value.substring(0, size))
+        quantity = Number(value.substring(1, size))
         unitaryPrice = Number(value.substring(size, splitPoint + 3).replace(',', '.'))
       }
     }
