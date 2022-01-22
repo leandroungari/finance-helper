@@ -1,6 +1,6 @@
 {
   "name": "finance-helper",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
