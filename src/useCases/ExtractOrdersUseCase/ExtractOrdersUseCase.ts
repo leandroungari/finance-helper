@@ -1,16 +1,18 @@
 import Order from '../../entities/Order'
 import Wallet from '../../entities/Wallet'
 import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
+import BrokageNotesRepository from '../../externals/repositories/BrokageNotesRepository'
 import OrdersRepository from '../../externals/repositories/OrdersRepository'
 import PositionsRepository from '../../externals/repositories/PositionsRepository'
 
 
 export default class ExtractOrdersUseCase {
-
+  
   constructor(
     private brokageNotesFileRepository: BrokageNotesFileRepository,
     private ordersRepository: OrdersRepository,
-    private positionsRepository: PositionsRepository
+    private positionsRepository: PositionsRepository,
+    private brokageNotesRepository: BrokageNotesRepository
   ) { }
 
   public async execute(walletId: string, date: string) {
@@ -18,6 +20,7 @@ export default class ExtractOrdersUseCase {
     const orders = await this.extractOrdersFromNote(wallet, date)
     await this.ordersRepository.save(wallet, orders)
     await this.updatePositionsInWallet(wallet, orders)
+    await this.brokageNotesRepository.markNotesAsProcessed(walletId, new Date(date))
     return orders
   }
 

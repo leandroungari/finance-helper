@@ -18,7 +18,8 @@ export default class ExtractOrdersFromPendingBrokageNotesUseCase {
     this.extractOrdersUseCase = new ExtractOrdersUseCase(
       this.brokageNotesFileRepository,
       this.ordersRepository,
-      this.positionsRepository
+      this.positionsRepository,
+      this.brokageNotesRepository
     )
   }
 
@@ -28,7 +29,6 @@ export default class ExtractOrdersFromPendingBrokageNotesUseCase {
     const result: Date[] = []
     for(const date of dates) {
       await this.extractOrdersUseCase.execute(walletId, date.toISOString().split('T')[0])
-      await this.brokageNotesRepository.markNotesAsProcessed(walletId, date)
       result.push(date)
     }
     return result.map((date) => date.toISOString().split('T')[0])
