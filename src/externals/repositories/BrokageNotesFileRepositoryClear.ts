@@ -19,7 +19,8 @@ export default class BrokageNotesFileRepositoryClear
   private static readonly UNUSED_EXPRESSIONS = [
     'FRACIONARIO',
     'VISTAFII',
-    '#'
+    '#',
+    'ED'
   ]
 
 

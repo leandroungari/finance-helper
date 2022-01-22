@@ -8,7 +8,6 @@ export default class TickerConverter {
     "GRENDENE ON": "GRND3",
     "BBSEGURIDADE ON": "BBSE3",
     "TRAN PAULIST PN": "TRPL4",
-    "ITAUSA PN ED": "ITSA4",
     "MAGAZ LUIZA ON": "MGLU3",
     "KINEA KNRI11 CI": "KNRI11",
     "WEG ON": "WEGE3"
