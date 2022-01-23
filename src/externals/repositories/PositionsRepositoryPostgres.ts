@@ -10,6 +10,24 @@ export default class PositionsRepositoryPostgres
     super()
   }
 
+  async delete(walletId: string, ticker: string): Promise<boolean> {
+    try {
+      await this.connection.position.delete({
+        where: {
+          walletId_description: {
+            walletId,
+            description: ticker
+          }
+        }
+      })
+    } catch(error) {
+      throw new Error(`Fail to delete the position ${walletId}/${ticker}`)
+    } finally {
+      this.disconnect()
+    }
+    return true
+  }
+
   async getAllPositionsFromWallet(wallet: string): Promise<Position[]> {
     let result: Position[] = []
     try {
@@ -31,7 +49,7 @@ export default class PositionsRepositoryPostgres
     return result
   }
 
-  async save(wallet: string, position: Position, investmentDate: Date): Promise<boolean> {
+  async save(wallet: string, position: Position): Promise<boolean> {
     try {
       const newItem = {
         averageCost: position.getAverageCost(),
@@ -39,7 +57,7 @@ export default class PositionsRepositoryPostgres
         description: position.getTicker(),
         walletId: wallet,
         currentPrice: 0,
-        firstInvestment: investmentDate
+        firstInvestment: position.getFirstInvestment()
       }
       await this.connection.position.create({ data: newItem })
     } catch (err) {
@@ -51,7 +69,7 @@ export default class PositionsRepositoryPostgres
   }
 
 
-  async update(wallet: string, position: Position, investmentDate: Date): Promise<boolean> {
+  async update(wallet: string, position: Position): Promise<boolean> {
     try {
       await this.connection.position.update({
         where: {
@@ -66,7 +84,8 @@ export default class PositionsRepositoryPostgres
           description: position.getTicker(),
           quantity: position.getQuantity(),
           walletId: wallet,
-          lastInvestment: position.getQuantity() === 0 ? investmentDate : undefined
+          firstInvestment: position.getFirstInvestment(),
+          lastInvestment: position.getLastInvestment()
         }
       })
     } catch (err) {
@@ -74,7 +93,6 @@ export default class PositionsRepositoryPostgres
     } finally {
       this.disconnect()
     }
-
     return true
   }
 

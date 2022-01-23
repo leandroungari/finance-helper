@@ -1,4 +1,4 @@
-import { OrderType } from './Order'
+import Order, { OrderType } from './Order'
 import Position from './Position'
 
 export default class Wallet {
@@ -73,5 +73,46 @@ export default class Wallet {
       isNewInvestiment,
       position: newPosition
     }
+  }
+
+  public recalculatePosition(ticker: string, orders: Order[]) {
+    let totalSold = 0
+    let balance = 0
+    let quantity = 0
+    let averageCost = 0;
+    let firstInvestment: Date
+    let lastInvestment: Date | null = null
+
+    orders.forEach((order, index) => {
+      if (order.getType() === 'buy') {
+        if (quantity === 0) {
+          firstInvestment = new Date(order.getDate())
+        }
+        quantity += order.getQuantity()
+        averageCost += (quantity * averageCost + order.getTotalPrice()) / quantity
+      } else {
+        quantity -= order.getQuantity()
+        totalSold += order.getQuantity() * order.getUnitaryPrice()
+        balance += order.getQuantity() * (averageCost - order.getUnitaryPrice())
+        if (quantity === 0) {
+          lastInvestment = new Date(order.getDate())
+          if (index < orders.length - 1) throw new Error('Cannot recalculate the position of asset')
+        }
+      }
+    })
+
+    const position = new Position(ticker, quantity, averageCost)
+    position.setBalance(balance)
+    position.setTotalSold(0)
+    position.setFirstInvestment(firstInvestment!)
+    if (lastInvestment !== null) {
+      position.setLastInvestment(lastInvestment)
+    }
+    return position
+  }
+
+  contains(ticker: string) {
+    if (this.positions === undefined) throw new Error('The positions are not loaded!')
+    return this.positions.some((item) => item.getTicker() === ticker)
   }
 }

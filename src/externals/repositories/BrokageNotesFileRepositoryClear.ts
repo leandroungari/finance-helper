@@ -5,15 +5,16 @@ import Order, { OrderType } from '../../entities/Order'
 import Wallet from '../../entities/Wallet'
 import { FinancialProperties } from '../../useCases/ExtractOrdersUseCase/ExtractOrdersDTO'
 import BrokageNotesFileRepository from './BrokageNotesFileRepository'
-import TickerConverter from './TickerConverter'
+import TickerMappingsRepository from './TickerMappingsRepository'
+import TickerMappingsRepositoryPostgres from './TickerMappingsRepositoryPostgres'
 
 export default class BrokageNotesFileRepositoryClear
   implements BrokageNotesFileRepository {
 
-  private converter: TickerConverter
+  private tickerMappingsRepository: TickerMappingsRepository
 
   constructor() {
-    this.converter = new TickerConverter()
+    this.tickerMappingsRepository = new TickerMappingsRepositoryPostgres()
   }
 
   private static readonly UNUSED_EXPRESSIONS = [
@@ -27,7 +28,7 @@ export default class BrokageNotesFileRepositoryClear
   async extractOrders(wallet: Wallet, date: string): Promise<Order[]> {
     const rows = await this.extractRows(wallet, date)
     const cleanedRows = this.filterRowsWithOrdersInformation(rows)
-    const orders = this.extractOrderFromRows(cleanedRows, date)
+    const orders = await this.extractOrderFromRows(cleanedRows, date)
     return orders
   }
 
@@ -46,14 +47,18 @@ export default class BrokageNotesFileRepositoryClear
       .map((item) => item.replace('1-BOVESPA', ''))
   }
 
-  private extractOrderFromRows(rows: string[], date: string) {
-    return rows.map((row) => this.extractOrderFromRow(row, date))
+  private async extractOrderFromRows(rows: string[], date: string) {
+    const orders: Order[] = []
+    for(const row of rows) {
+      await this.extractOrderFromRow(row, date)
+    }
+    return orders
   }
 
-  private extractOrderFromRow(row: string, date: string): Order {
+  private async extractOrderFromRow(row: string, date: string): Promise<Order> {
     const type = this.identifyOrderType(row)
     const cleanedRow = this.cleanUnusedExpresssion(row)
-    const properties = this.getFinancialProperties(cleanedRow)
+    const properties = await this.getFinancialProperties(cleanedRow)
     return new Order(
       properties.description,
       properties.unitaryPrice,
@@ -80,12 +85,12 @@ export default class BrokageNotesFileRepositoryClear
   }
 
 
-  private getFinancialProperties(row: string): FinancialProperties {
+  private async getFinancialProperties(row: string): Promise<FinancialProperties> {
     const parts = row.split(' ').filter((a) => a.trim().length > 0).map((a) => a.trim())
     let value = parts.pop()!
     value = value!.substring(2, value!.length - 1)
     let description = parts.join(' ')
-    description = this.converter.convert(description)
+    description = await this.tickerMappingsRepository.getMappedTicker(description)
     const splitPoint = value.indexOf(',')
     let quantity = Number(value.substring(0, 1))
     let unitaryPrice = Number(value.substring(1, splitPoint + 3).replace(',', '.'))

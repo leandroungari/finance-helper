@@ -55,3 +55,8 @@ model BrokageNotes {
   processed               String      @db.VarChar(20)     
   @@unique([walletId, date])
 }
+
+model TickerMappings {
+  description             String     @id @unique
+  ticker                  String     @db.VarChar(30)
+}

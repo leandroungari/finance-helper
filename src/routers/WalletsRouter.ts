@@ -3,6 +3,7 @@ import { BadRequest } from '../core/http'
 import Router from '../core/Router'
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
+import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
 
 const router = new Router('/wallets')
@@ -11,6 +12,13 @@ router.post('/', async(req, res) => {
   const data = req.body
   const controller = new CreateWalletController();
   return await controller.handle(data)
+})
+
+router.patch('/:walletId/positions/merge', async (req, res) => {
+  const { walletId } = req.params
+  const { from, to } = req.body
+  const controller = new MergePositionsController()
+  return await controller.handle(walletId, from, to)
 })
 
 router.post('/:walletId/brokage-notes', async (req, res) => {
