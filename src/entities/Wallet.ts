@@ -115,8 +115,8 @@ export default class Wallet {
         if (quantity === 0) {
           firstInvestment = new Date(order.getDate())
         }
+        averageCost = (quantity * averageCost + order.getTotalPrice()) / (quantity + order.getQuantity())
         quantity += order.getQuantity()
-        averageCost += (quantity * averageCost + order.getTotalPrice()) / quantity
       } else {
         quantity -= order.getQuantity()
         totalSold += order.getQuantity() * order.getUnitaryPrice()

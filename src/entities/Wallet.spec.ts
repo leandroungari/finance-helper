@@ -1,3 +1,4 @@
+import Order from './Order'
 import Wallet from './Wallet'
 
 let wallet: Wallet
@@ -85,4 +86,17 @@ describe('it represents the purchase and sells', () => {
     expect(newPosition.getBalance()).toBe(0)
   })
 
+})
+
+describe('merge positions of assets', () => {
+  test('merge asset of two orders', () => {
+    const wallet = new Wallet('test')
+    const orders = [
+      new Order('TEST3', 31.58, 1, 31.58, 'buy', '2022-01-23'),
+      new Order('TEST3', 33.85, 1, 33.85, 'buy', '2022-01-23')
+    ]
+    const position = wallet.recalculatePosition('TEST3', orders)
+    expect(position.getAverageCost()).toBe(32.715)
+    expect(position.getQuantity()).toBe(2)
+  })
 })
