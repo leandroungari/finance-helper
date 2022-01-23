@@ -34,37 +34,64 @@ export default class Wallet {
     this.owner = owner
   }
 
+  getIndexFromTicker(ticker: string) {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    return this.positions
+      .findIndex((item) => item.getTicker() === ticker && item.getLastInvestment() == undefined)
+  }
 
-  public addNewInvestment(ticker: string, quantity: number, averagePrice: number, type: OrderType) {
+  getPositionByIndex(index: number) {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    return this.positions[index]
+  }
+
+  updatePositionByIndex(index: number, position: Position) {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    this.positions[index] = position
+  }
+
+  addNewPosition(position: Position) {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    this.positions.push(position)
+  }
+
+
+  public addNewInvestment(ticker: string, quantity: number, averagePrice: number, type: OrderType, date: Date) {
     let isNewInvestiment: boolean = false
     let newPosition: Position
-    if (this.positions === undefined) throw new Error('The positions were not loaded.')
     if (type === 'buy') {
-      const index = this.positions.findIndex((item) => item.getTicker() === ticker)
+      const index = this.getIndexFromTicker(ticker)
       if (index !== -1) {
-        const position = this.positions[index]
+        const position = this.getPositionByIndex(index)
         const newTotalQuantity = position.getQuantity() + quantity
         const newAverageCost = (position.getTotalCost() + quantity * averagePrice) / newTotalQuantity
         isNewInvestiment = false
         newPosition = new Position(ticker, newTotalQuantity, newAverageCost)
-        this.positions[index] = newPosition
+        newPosition.setBalance(position.getBalance())
+        newPosition.setTotalSold(position.getTotalSold())
+        this.updatePositionByIndex(index, newPosition)
       } else {
         isNewInvestiment = true
         newPosition = new Position(ticker, quantity, averagePrice)
-        this.positions.push(newPosition)
+        newPosition.setFirstInvestment(date)
+        this.addNewPosition(newPosition)
       }
     } else {
-      const index = this.positions.findIndex((item) => item.getTicker() === ticker)
+      const index = this.getIndexFromTicker(ticker)
       if (index !== -1) {
-        const position = this.positions[index]
+        const position = this.getPositionByIndex(index)
         newPosition = new Position(
-          ticker, 
+          ticker,
           position.getQuantity() - quantity,
-          averagePrice
+          position.getAverageCost()
         )
         const soldValue = quantity * averagePrice
         newPosition.setTotalSold(position.getTotalSold() + soldValue)
         newPosition.setBalance(position.getBalance() + quantity * (averagePrice - position.getAverageCost()))
+        if (newPosition.getQuantity() === 0) {
+          newPosition.setLastInvestment(date)
+        }
+        this.updatePositionByIndex(index, newPosition)
       } else {
         throw new Error('The asset was not found.')
       }
@@ -79,7 +106,7 @@ export default class Wallet {
     let totalSold = 0
     let balance = 0
     let quantity = 0
-    let averageCost = 0;
+    let averageCost = 0
     let firstInvestment: Date
     let lastInvestment: Date | null = null
 
@@ -103,7 +130,7 @@ export default class Wallet {
 
     const position = new Position(ticker, quantity, averageCost)
     position.setBalance(balance)
-    position.setTotalSold(0)
+    position.setTotalSold(totalSold)
     position.setFirstInvestment(firstInvestment!)
     if (lastInvestment !== null) {
       position.setLastInvestment(lastInvestment)

@@ -50,7 +50,8 @@ export default class BrokageNotesFileRepositoryClear
   private async extractOrderFromRows(rows: string[], date: string) {
     const orders: Order[] = []
     for(const row of rows) {
-      await this.extractOrderFromRow(row, date)
+      const item = await this.extractOrderFromRow(row, date)
+      orders.push(item)
     }
     return orders
   }

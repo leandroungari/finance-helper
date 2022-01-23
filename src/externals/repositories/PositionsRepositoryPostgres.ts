@@ -34,11 +34,14 @@ export default class PositionsRepositoryPostgres
       const items = await this.connection.position.findMany({
         where: {
           walletId: wallet,
+          lastInvestment: null,
         }
       })
       result = items.map((item) => {
         const position = new Position(item.description, item.quantity, item.averageCost)
         position.setCurrentPrice(item.currentPrice)
+        position.setBalance(item.balance)
+        position.setTotalSold(item.totalSold)
         return position
       })
     } catch(err) {
@@ -84,6 +87,8 @@ export default class PositionsRepositoryPostgres
           description: position.getTicker(),
           quantity: position.getQuantity(),
           walletId: wallet,
+          balance: position.getBalance(),
+          totalSold: position.getTotalSold(),
           firstInvestment: position.getFirstInvestment(),
           lastInvestment: position.getLastInvestment()
         }
