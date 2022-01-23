@@ -18,9 +18,9 @@ export default class ExtractOrdersUseCase {
   public async execute(walletId: string, date: string) {
     const wallet = new Wallet(walletId)
     const orders = await this.extractOrdersFromNote(wallet, date)
-    await this.ordersRepository.save(wallet, orders)
     await this.updatePositionsInWallet(wallet, orders)
     await this.brokageNotesRepository.markNotesAsProcessed(walletId, new Date(date))
+    await this.ordersRepository.save(wallet, orders)
     return orders
   }
 
