@@ -93,7 +93,7 @@ export default class Wallet {
         }
         this.updatePositionByIndex(index, newPosition)
       } else {
-        throw new Error('The asset was not found.')
+        throw new Error(`The asset was not found: ${ticker}`)
       }
     }
     return {
