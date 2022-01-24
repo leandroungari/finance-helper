@@ -25,7 +25,9 @@ export default class MergePositionsUseCase {
     } else {
       await this.positionsRepository.save(walletId, newPosition)
     }
-    await this.positionsRepository.delete(walletId, from)
+    if (wallet.contains(from)) {
+      await this.positionsRepository.delete(walletId, from)
+    }
     return newPosition
   }
 }
