@@ -107,3 +107,16 @@ As notas de corretagem pendentes são os arquivos previamente carregados mas ain
 ```http
 POST {base_url}}/wallets/{{walletId}}/brokage-notes HTTP/1.1
 ```
+
+### Junção de ativos
+Algumas vezes a identificação do ticker pode ser processada de forma incorreta gerando duas posições separadas para o mesmo ativo, ou mesmo pode ser necessário substituir o ticker incorreto de uma posição para um correto, isso pode ser resolvido por esta chamada de serviço
+
+```http
+PATCH {{base_url}}/wallets/{{walletId}}/positions/merge HTTP/1.1
+Content-Type: application/json
+
+{
+	"from": "METAL LEVE ON",
+	"to": "LEVE3"
+}
+```
