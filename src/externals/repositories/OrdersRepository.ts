@@ -8,4 +8,6 @@ export default interface OrdersRepository {
   getOrdersByTicker(walletId: string, ticker: string): Promise<Order[]>
 
   replaceTickerFromOrders(walletId: string, from: string, to: string): Promise<boolean>
+
+  getOrdersInInterval(walletId: string, from: Date, to: Date): Promise<Order[]>
 }

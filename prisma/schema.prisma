@@ -29,6 +29,7 @@ model Wallet {
   createAt      DateTime    @db.Timestamp() @default(now())
   positions     Position[]
   notes         BrokageNotes[]
+  snapshots     Snapshots[]
 }
 
 
@@ -60,3 +61,19 @@ model TickerMappings {
   description             String     @id @unique
   ticker                  String     @db.VarChar(30)
 }
+
+model Snapshots {
+  date                    DateTime    @db.Date
+  wallet                  Wallet      @relation(fields: [walletId], references: [id])
+  walletId                String 
+  description             String      @db.VarChar(30)
+  quantity                Float       @db.Real()
+  averageCost             Float       @db.Real()
+  currentPrice            Float       @db.Real()
+  balance                 Float       @db.Real() @default(0)
+  totalSold               Float       @db.Real() @default(0)
+  firstInvestment         DateTime?   @db.Date
+  lastInvestment          DateTime?   @db.Date
+  @@unique([date, walletId, description])
+}
+

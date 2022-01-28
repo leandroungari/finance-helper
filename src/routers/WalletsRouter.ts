@@ -1,6 +1,7 @@
 import { UploadedFile } from 'express-fileupload'
 import { BadRequest } from '../core/http'
 import Router from '../core/Router'
+import CreateSnapshotController from '../useCases/CreateSnapshotUseCase/CreateSnapshotController'
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
@@ -25,6 +26,13 @@ router.post('/:walletId/brokage-notes', async (req, res) => {
   const { walletId } = req.params
   const controller = new ExtractOrdersFromPendingBrokageNotesController()
   return await controller.handle(walletId)
+})
+
+router.post('/:walletId/snapshots', async (req, res) => {
+  const { walletId } = req.params
+  const { date } = req.body
+  const controller = new CreateSnapshotController()
+  return await controller.handle(walletId, date)
 })
 
 

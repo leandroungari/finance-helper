@@ -6,9 +6,34 @@ import OrdersRepository from './OrdersRepository'
 export default class OrdersRepositoryPostgres
   extends Postgres
   implements OrdersRepository {
-
-  constructor() {
-    super()
+  
+  async getOrdersInInterval(walletId: string, from: Date, to: Date): Promise<Order[]> {
+    const orders: Order[] = []
+    try {
+      const items = await this.connection.order.findMany({
+        where: {
+          wallet: walletId,
+          date: {
+            gt: from,
+            lte: to
+          }
+        }
+      })
+      items.forEach((item) => {
+        const order = new Order(
+          item.description, 
+          item.unitaryPrice, 
+          item.quantity, 
+          item.totalPrice, 
+          item.type === 'B' ? 'buy' : 'sell', 
+          item.date.toISOString().split('T')[0]
+        )
+        orders.push(order)
+      })
+    } catch(error) {
+      throw new Error(`Fail to retrieve the orders: ${error}`)
+    }
+    return orders
   }
 
   async getOrdersByTicker(walletId: string, ticker: string): Promise<Order[]> {
