@@ -120,3 +120,10 @@ Content-Type: application/json
 	"to": "LEVE3"
 }
 ```
+### Atualização de cotações da carteira
+Realiza a atualização das cotações das posições de ativos não encerradas na carteira.
+
+```http
+PATCH {{base_url}}/wallets/{{walletId}}/positions/price HTTP/1.1
+Content-Type: application/json
+```
