@@ -6,4 +6,5 @@ export default interface PositionsRepository {
   getPositionByTicker(wallet: string, ticker: string): Promise<Position | undefined>
   getAllPositionsFromWallet(wallet: string): Promise<Position[]>
   delete(walletId: string, ticker: string, firstInvestment: Date): Promise<boolean>
+  updateCurrentPrice(walletId: string, ticker: string, price: number): Promise<boolean>
 }

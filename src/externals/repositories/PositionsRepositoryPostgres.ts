@@ -10,6 +10,26 @@ export default class PositionsRepositoryPostgres
     super()
   }
 
+  async updateCurrentPrice(walletId: string, ticker: string, price: number): Promise<boolean> {
+    try {
+      await this.connection.position.updateMany({
+        where: {
+          walletId,
+          description: ticker,
+          lastInvestment: null
+        },
+        data: {
+          currentPrice: price
+        }
+      })
+    } catch(error) {
+      throw new Error(`Cannot update the price of ${walletId}/${ticker}: ${error}`)
+    } finally {
+      this.disconnect()
+    }
+    return true
+  }
+
   async delete(walletId: string, ticker: string, firstInvestment: Date): Promise<boolean> {
     try {
       await this.connection.position.delete({
@@ -39,7 +59,13 @@ export default class PositionsRepositoryPostgres
         }
       })
       result = items.map((item) => {
-        const position = new Position(item.description, item.quantity, item.averageCost, item.firstInvestment)
+        const position = new Position(
+          item.description, 
+          item.quantity, 
+          item.averageCost,
+          item.currency,
+          item.firstInvestment
+        )
         position.setCurrentPrice(item.currentPrice)
         position.setBalance(item.balance)
         position.setTotalSold(item.totalSold)
@@ -113,7 +139,13 @@ export default class PositionsRepositoryPostgres
         }
       })
       if (result) {
-        const position = new Position(result.description, result.quantity, result.averageCost, result.firstInvestment)
+        const position = new Position(
+          result.description, 
+          result.quantity, 
+          result.averageCost, 
+          result.currency,
+          result.firstInvestment
+        )
         position.setCurrentPrice(result.currentPrice)
         return position
       }

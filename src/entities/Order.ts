@@ -8,6 +8,7 @@ export default class Order {
     private unitaryPrice: number,
     private quantity: number,
     private totalPrice: number,
+    private currency: string,
     private type: OrderType,
     private date: string
   ) { }
@@ -36,5 +37,7 @@ export default class Order {
     return this.date
   }
 
-
+  public getCurrency() {
+    return this.currency
+  }
 }

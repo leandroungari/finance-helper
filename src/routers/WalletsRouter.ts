@@ -5,6 +5,7 @@ import CreateSnapshotController from '../useCases/CreateSnapshotUseCase/CreateSn
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
+import UpdateQuotesController from '../useCases/UpdateQuotesUseCase/UpdateQuotesController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
 
 const router = new Router('/wallets')
@@ -20,6 +21,12 @@ router.patch('/:walletId/positions/merge', async (req, res) => {
   const { from, to } = req.body
   const controller = new MergePositionsController()
   return await controller.handle(walletId, from, to)
+})
+
+router.patch('/:walletId/positions/price', async (req, res) => {
+  const { walletId } = req.params
+  const controller = new UpdateQuotesController()
+  return await controller.handle(walletId)
 })
 
 router.post('/:walletId/brokage-notes', async (req, res) => {

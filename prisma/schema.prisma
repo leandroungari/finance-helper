@@ -18,6 +18,7 @@ model Order {
   quantity      Float       @db.Real
   unitaryPrice  Float       @db.Real
   totalPrice    Float       @db.Real
+  currency      String      @db.VarChar(8) @default("BRL")
   date          DateTime    @db.Date
   createAt      DateTime?   @db.Timestamp() @default(now())
   updateAt      DateTime?   @db.Timestamp()
@@ -41,6 +42,7 @@ model Position {
   quantity                Float       @db.Real()
   averageCost             Float       @db.Real()
   currentPrice            Float       @db.Real()
+  currency                String      @db.VarChar(8) @default("BRL")
   balance                 Float       @db.Real() @default(0)
   totalSold               Float       @db.Real() @default(0)
   firstInvestment         DateTime   @db.Date
@@ -70,6 +72,7 @@ model Snapshots {
   quantity                Float       @db.Real()
   averageCost             Float       @db.Real()
   currentPrice            Float       @db.Real()
+  currency                String      @db.VarChar(8) @default("BRL")
   balance                 Float       @db.Real() @default(0)
   totalSold               Float       @db.Real() @default(0)
   firstInvestment         DateTime   @db.Date

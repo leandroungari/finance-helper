@@ -9,6 +9,7 @@ export default class Position {
     private ticker: string,
     private quantity: number,
     private averageCost: number,
+    private currency: string,
     private firstInvestment: Date
   ) {
     this.totalCost = this.quantity * this.averageCost
@@ -58,11 +59,6 @@ export default class Position {
   public getFirstInvestment() {
     return this.firstInvestment
   }
-
-  public setFirstInvestment(value: Date) {
-    this.firstInvestment = value
-  }
-
   
   public getLastInvestment() {
     return this.lastInvestment
@@ -72,5 +68,7 @@ export default class Position {
     this.lastInvestment = value
   }
 
-
+  public getCurrency() {
+    return this.currency
+  }
 }

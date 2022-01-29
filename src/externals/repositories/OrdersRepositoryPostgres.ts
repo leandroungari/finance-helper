@@ -25,6 +25,7 @@ export default class OrdersRepositoryPostgres
           item.unitaryPrice, 
           item.quantity, 
           item.totalPrice, 
+          item.currency,
           item.type === 'B' ? 'buy' : 'sell', 
           item.date.toISOString().split('T')[0]
         )
@@ -51,7 +52,8 @@ export default class OrdersRepositoryPostgres
         item.description, 
         item.unitaryPrice, 
         item.quantity, 
-        item.totalPrice, 
+        item.totalPrice,
+        item.currency,
         item.type === 'B' ? 'buy' : 'sell', 
         item.date.toISOString().split('T')[0]
       ))

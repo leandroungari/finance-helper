@@ -30,19 +30,22 @@ export default class ExtractOrdersUseCase {
 
   private async updatePositionsInWallet(wallet: Wallet, orders: Order[]) {
     const positions = await this.positionsRepository.getAllPositionsFromWallet(wallet.getId())
-    const descriptionsOfPositions = positions.map((item) => item.getTicker())
-    const positionWithBlankSpace = descriptionsOfPositions.filter((item) => item.includes(' '))
-    if (positionWithBlankSpace.length > 0) {
-      throw new Error(`There are position that need some adjustment: ${positionWithBlankSpace}`)
-    }
     wallet.setPositions(positions)
-    for (const order of orders) {
-      const { isNewInvestiment, position } = wallet
-        .addNewInvestment(order.getDescription(), order.getQuantity(), order.getUnitaryPrice(), order.getType(), new Date(order.getDate()))
-      if (isNewInvestiment) {
-        await this.positionsRepository.save(wallet.getId(), position)
-      } else {
-        await this.positionsRepository.update(wallet.getId(), position)
+    if (wallet.validate()) {
+      for (const order of orders) {
+        const { isNewInvestiment, position } = wallet.addNewInvestment(
+          order.getDescription(), 
+        order.getQuantity(), 
+        order.getUnitaryPrice(),
+        order.getCurrency(),
+        order.getType(),
+        new Date(order.getDate())
+        )
+        if (isNewInvestiment) {
+          await this.positionsRepository.save(wallet.getId(), position)
+        } else {
+          await this.positionsRepository.update(wallet.getId(), position)
+        }
       }
     }
   }

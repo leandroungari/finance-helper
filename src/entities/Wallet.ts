@@ -24,8 +24,19 @@ export default class Wallet {
     this.positions = positions
   }
 
+  public validate(): boolean {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
+    const descriptionsOfPositions = this.positions.map((item) => item.getTicker())
+    const positionWithBlankSpace = descriptionsOfPositions.filter((item) => item.includes(' '))
+    if (positionWithBlankSpace.length > 0) {
+      throw new Error(`There are positions that need some adjustment: ${positionWithBlankSpace}`)
+    }
+    return true
+  }
+
 
   public getPositions() {
+    if (this.positions === undefined) throw new Error('The positions were not loaded.')
     return this.positions
   }
 
@@ -56,7 +67,7 @@ export default class Wallet {
   }
 
 
-  public addNewInvestment(ticker: string, quantity: number, averagePrice: number, type: OrderType, date: Date) {
+  public addNewInvestment(ticker: string, quantity: number, averagePrice: number, currency: string, type: OrderType, date: Date) {
     let isNewInvestiment: boolean = false
     let newPosition: Position
     if (type === 'buy') {
@@ -67,9 +78,10 @@ export default class Wallet {
         const newAverageCost = (position.getTotalCost() + quantity * averagePrice) / newTotalQuantity
         isNewInvestiment = false
         newPosition = new Position(
-          ticker, 
-          newTotalQuantity, 
-          newAverageCost, 
+          ticker,
+          newTotalQuantity,
+          newAverageCost,
+          position.getCurrency(),
           position.getFirstInvestment()
         )
         newPosition.setBalance(position.getBalance())
@@ -77,7 +89,7 @@ export default class Wallet {
         this.updatePositionByIndex(index, newPosition)
       } else {
         isNewInvestiment = true
-        newPosition = new Position(ticker, quantity, averagePrice, date)
+        newPosition = new Position(ticker, quantity, averagePrice, currency, date)
         this.addNewPosition(newPosition)
       }
     } else {
@@ -88,6 +100,7 @@ export default class Wallet {
           ticker,
           position.getQuantity() - quantity,
           position.getAverageCost(),
+          position.getCurrency(),
           position.getFirstInvestment()
         )
         const soldValue = quantity * averagePrice
@@ -114,11 +127,13 @@ export default class Wallet {
     let averageCost = 0
     let firstInvestment: Date = new Date()
     let lastInvestment: Date | null = null
+    let currency = 'BRL'
 
     orders.forEach((order, index) => {
       if (order.getType() === 'buy') {
         if (quantity === 0) {
           firstInvestment = new Date(order.getDate())
+          currency = order.getCurrency()
         }
         averageCost = (quantity * averageCost + order.getTotalPrice()) / (quantity + order.getQuantity())
         quantity += order.getQuantity()
@@ -133,7 +148,7 @@ export default class Wallet {
       }
     })
 
-    const position = new Position(ticker, quantity, averageCost, firstInvestment)
+    const position = new Position(ticker, quantity, averageCost, currency, firstInvestment)
     position.setBalance(balance)
     position.setTotalSold(totalSold)
     if (lastInvestment !== null) {

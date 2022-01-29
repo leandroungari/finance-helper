@@ -30,6 +30,7 @@ export default class CreateSnapshotUseCase {
         order.getDescription(), 
         order.getQuantity(),
         order.getUnitaryPrice(),
+        order.getCurrency(),
         order.getType(),
         new Date(order.getDate())
       )

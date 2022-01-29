@@ -24,6 +24,8 @@ export default class BrokageNotesFileRepositoryClear
     'ED'
   ]
 
+  private static readonly DEFAULT_CURRENCY = 'BRL'
+
 
   async extractOrders(wallet: Wallet, date: string): Promise<Order[]> {
     const rows = await this.extractRows(wallet, date)
@@ -65,6 +67,7 @@ export default class BrokageNotesFileRepositoryClear
       properties.unitaryPrice,
       properties.quantity,
       properties.totalPrice,
+      BrokageNotesFileRepositoryClear.DEFAULT_CURRENCY,
       type,
       date,
     )
