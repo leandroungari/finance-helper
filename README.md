@@ -67,7 +67,7 @@ MAX_NOTES_PER_EXECUTION=10
 Criação de carteira para registro de ativos
 
 ```http
-POST {{base_url}}/wallets HTTP/1.1
+POST http://localhost:8000/wallets HTTP/1.1
 Content-Type: application/json
 
 {
@@ -80,7 +80,7 @@ Content-Type: application/json
 Fazer o carregamento de uma ou mais notas de corretagem.
 
 ```http
-POST {{base_url}}/wallets/{{walletId}}}/brokage-notes/upload HTTP/1.1
+POST http://localhost:8000/wallets/:walletId}/brokage-notes/upload HTTP/1.1
 
 #files
 notes[0] = 2019-09-12.pdf
@@ -91,7 +91,7 @@ notes[1] = 2019-10-11.pdf
 Extrai as ordens de uma nota, persiste a informação, atualiza a posição e retorna a lista de ordens.
 
 ```http
-POST {{base_url}}/orders HTTP/1.1
+POST http://localhost:8000/orders HTTP/1.1
 
 {
   "date": "2019-07-08", /*data da nota de corretagem*/
@@ -105,14 +105,14 @@ Realiza a extração das ordens das notas de corretagem e realiza a consolidaç�
 As notas de corretagem pendentes são os arquivos previamente carregados mas ainda não processados.
 
 ```http
-POST {base_url}}/wallets/{{walletId}}/brokage-notes HTTP/1.1
+POST http://localhost:8000/wallets/:walletId/brokage-notes HTTP/1.1
 ```
 
 ### Junção de ativos
 Algumas vezes a identificação do ticker pode ser processada de forma incorreta gerando duas posições separadas para o mesmo ativo, ou mesmo pode ser necessário substituir o ticker incorreto de uma posição para um correto, isso pode ser resolvido por esta chamada de serviço
 
 ```http
-PATCH {{base_url}}/wallets/{{walletId}}/positions/merge HTTP/1.1
+PATCH http://localhost:8000/wallets/:walletId/positions/merge HTTP/1.1
 Content-Type: application/json
 
 {
@@ -124,6 +124,6 @@ Content-Type: application/json
 Realiza a atualização das cotações das posições de ativos não encerradas na carteira.
 
 ```http
-PATCH {{base_url}}/wallets/{{walletId}}/positions/price HTTP/1.1
+PATCH http://localhost:8000/wallets/:walletId/positions/price HTTP/1.1
 Content-Type: application/json
 ```
