@@ -1,7 +1,6 @@
 export default class Position {
   private totalCost: number
   private currentPrice?: number
-  private firstInvestment?: Date
   private lastInvestment?: Date
   private totalSold: number = 0
   private balance: number = 0
@@ -10,6 +9,7 @@ export default class Position {
     private ticker: string,
     private quantity: number,
     private averageCost: number,
+    private firstInvestment: Date
   ) {
     this.totalCost = this.quantity * this.averageCost
   }

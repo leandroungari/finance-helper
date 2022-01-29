@@ -10,18 +10,19 @@ export default class PositionsRepositoryPostgres
     super()
   }
 
-  async delete(walletId: string, ticker: string): Promise<boolean> {
+  async delete(walletId: string, ticker: string, firstInvestment: Date): Promise<boolean> {
     try {
       await this.connection.position.delete({
         where: {
-          walletId_description: {
+          walletId_description_firstInvestment: {
             walletId,
-            description: ticker
+            description: ticker,
+            firstInvestment
           }
         }
       })
     } catch(error) {
-      throw new Error(`Fail to delete the position ${walletId}/${ticker}`)
+      throw new Error(`Fail to delete the position ${walletId}/${ticker}/`)
     } finally {
       this.disconnect()
     }
@@ -38,7 +39,7 @@ export default class PositionsRepositoryPostgres
         }
       })
       result = items.map((item) => {
-        const position = new Position(item.description, item.quantity, item.averageCost)
+        const position = new Position(item.description, item.quantity, item.averageCost, item.firstInvestment)
         position.setCurrentPrice(item.currentPrice)
         position.setBalance(item.balance)
         position.setTotalSold(item.totalSold)
@@ -76,9 +77,10 @@ export default class PositionsRepositoryPostgres
     try {
       await this.connection.position.update({
         where: {
-          walletId_description: {
+          walletId_description_firstInvestment: {
             walletId: wallet,
-            description: position.getTicker()
+            description: position.getTicker(),
+            firstInvestment: position.getFirstInvestment()
           }
         },
         data: {
@@ -111,7 +113,7 @@ export default class PositionsRepositoryPostgres
         }
       })
       if (result) {
-        const position = new Position(result.description, result.quantity, result.averageCost)
+        const position = new Position(result.description, result.quantity, result.averageCost, result.firstInvestment)
         position.setCurrentPrice(result.currentPrice)
         return position
       }

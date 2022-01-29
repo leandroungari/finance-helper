@@ -43,9 +43,9 @@ model Position {
   currentPrice            Float       @db.Real()
   balance                 Float       @db.Real() @default(0)
   totalSold               Float       @db.Real() @default(0)
-  firstInvestment         DateTime?   @db.Date
+  firstInvestment         DateTime   @db.Date
   lastInvestment          DateTime?   @db.Date
-  @@unique([walletId, description])
+  @@unique([walletId, description, firstInvestment])
 }
 
 model BrokageNotes {
@@ -72,7 +72,7 @@ model Snapshots {
   currentPrice            Float       @db.Real()
   balance                 Float       @db.Real() @default(0)
   totalSold               Float       @db.Real() @default(0)
-  firstInvestment         DateTime?   @db.Date
+  firstInvestment         DateTime   @db.Date
   lastInvestment          DateTime?   @db.Date
   @@unique([date, walletId, description])
 }

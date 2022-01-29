@@ -41,12 +41,9 @@ export default class SnapshotsRepositoryPostgres
         }
       })
       items.forEach((item) => {
-        const position = new Position(item.description, item.quantity, item.averageCost)
+        const position = new Position(item.description, item.quantity, item.averageCost, item.firstInvestment)
         position.setCurrentPrice(item.currentPrice)
         position.setBalance(item.balance)
-        if (item.firstInvestment) {
-          position.setFirstInvestment(item.firstInvestment)
-        }
         if (item.lastInvestment) {
           position.setLastInvestment(item.lastInvestment)
         }

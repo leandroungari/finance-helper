@@ -7,9 +7,16 @@ export default class TickerMappingsRepositoryPostgres
 
   async createMapping(description: string, ticker: string): Promise<boolean> {
     try {
-      await this.connection.tickerMappings.create({
-        data: { description, ticker }
+      const result = await this.connection.tickerMappings.count({
+        where: {
+          description
+        }
       })
+      if (result === 0) {
+        await this.connection.tickerMappings.create({
+          data: { description, ticker }
+        })
+      }
     } catch(error) {
       throw new Error(`It was not possible to create the mapping ${description} - ${ticker}: ${error}`)
     } finally {

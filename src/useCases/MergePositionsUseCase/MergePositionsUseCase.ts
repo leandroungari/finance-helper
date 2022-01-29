@@ -11,8 +11,7 @@ export default class MergePositionsUseCase {
   ) {}
 
   async execute(walletId: string, from: string, to: string) {
-    const [,,positions] = await Promise.all([
-      this.tickerMappingsRepository.createMapping(from, to),
+    const [,positions] = await Promise.all([
       this.ordersRepository.replaceTickerFromOrders(walletId, from, to),
       this.positionsRepository.getAllPositionsFromWallet(walletId)
     ])
@@ -22,12 +21,15 @@ export default class MergePositionsUseCase {
     const newPosition = wallet.recalculatePosition(to, orders)
     if (wallet.contains(to)) {
       await this.positionsRepository.update(walletId, newPosition)
-    } else {
+    } else if (newPosition.getQuantity() > 0) {
       await this.positionsRepository.save(walletId, newPosition)
     }
-    if (wallet.contains(from)) {
-      await this.positionsRepository.delete(walletId, from)
+    const oldPositionIndex = wallet.getIndexFromTicker(from)
+    if (oldPositionIndex !== -1) {
+      const oldPosition = wallet.getPositionByIndex(oldPositionIndex)
+      await this.positionsRepository.delete(walletId, from, oldPosition.getFirstInvestment())
     }
+    await this.tickerMappingsRepository.createMapping(from, to)
     return newPosition
   }
 }

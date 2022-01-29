@@ -66,14 +66,18 @@ export default class Wallet {
         const newTotalQuantity = position.getQuantity() + quantity
         const newAverageCost = (position.getTotalCost() + quantity * averagePrice) / newTotalQuantity
         isNewInvestiment = false
-        newPosition = new Position(ticker, newTotalQuantity, newAverageCost)
+        newPosition = new Position(
+          ticker, 
+          newTotalQuantity, 
+          newAverageCost, 
+          position.getFirstInvestment()
+        )
         newPosition.setBalance(position.getBalance())
         newPosition.setTotalSold(position.getTotalSold())
         this.updatePositionByIndex(index, newPosition)
       } else {
         isNewInvestiment = true
-        newPosition = new Position(ticker, quantity, averagePrice)
-        newPosition.setFirstInvestment(date)
+        newPosition = new Position(ticker, quantity, averagePrice, date)
         this.addNewPosition(newPosition)
       }
     } else {
@@ -83,7 +87,8 @@ export default class Wallet {
         newPosition = new Position(
           ticker,
           position.getQuantity() - quantity,
-          position.getAverageCost()
+          position.getAverageCost(),
+          position.getFirstInvestment()
         )
         const soldValue = quantity * averagePrice
         newPosition.setTotalSold(position.getTotalSold() + soldValue)
@@ -107,7 +112,7 @@ export default class Wallet {
     let balance = 0
     let quantity = 0
     let averageCost = 0
-    let firstInvestment: Date
+    let firstInvestment: Date = new Date()
     let lastInvestment: Date | null = null
 
     orders.forEach((order, index) => {
@@ -128,10 +133,9 @@ export default class Wallet {
       }
     })
 
-    const position = new Position(ticker, quantity, averageCost)
+    const position = new Position(ticker, quantity, averageCost, firstInvestment)
     position.setBalance(balance)
     position.setTotalSold(totalSold)
-    position.setFirstInvestment(firstInvestment!)
     if (lastInvestment !== null) {
       position.setLastInvestment(lastInvestment)
     }
