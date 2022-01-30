@@ -4,16 +4,24 @@ import Router from '../core/Router'
 import CreateSnapshotController from '../useCases/CreateSnapshotUseCase/CreateSnapshotController'
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
+import GetPositionsOfWalletController from '../useCases/GetPositionsOfWalletUseCase/GetPositionsOfWalletController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
 import UpdateQuotesController from '../useCases/UpdateQuotesUseCase/UpdateQuotesController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
 
 const router = new Router('/wallets')
 
-router.post('/', async(req, res) => {
+router.post('/', async (req, res) => {
   const data = req.body
-  const controller = new CreateWalletController();
+  const controller = new CreateWalletController()
   return await controller.handle(data)
+})
+
+router.get('/:walletId/positions', async (req, res) => {
+  const { walletId } = req.params
+  const notOnlyActive = Boolean(req.query.notOnlyActive)
+  const controller = new GetPositionsOfWalletController()
+  return await controller.handle(walletId, notOnlyActive)
 })
 
 router.patch('/:walletId/positions/merge', async (req, res) => {

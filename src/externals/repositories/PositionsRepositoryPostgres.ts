@@ -49,14 +49,14 @@ export default class PositionsRepositoryPostgres
     return true
   }
 
-  async getAllPositionsFromWallet(wallet: string): Promise<Position[]> {
+  async getAllPositionsFromWallet(wallet: string, notOnlyActive = false): Promise<Position[]> {
     let result: Position[] = []
     try {
+      const condition = notOnlyActive 
+        ? { walletId: wallet }
+        : { walletId: wallet, lastInvestment: null }
       const items = await this.connection.position.findMany({
-        where: {
-          walletId: wallet,
-          lastInvestment: null,
-        }
+        where: condition
       })
       result = items.map((item) => {
         const position = new Position(
