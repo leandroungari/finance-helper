@@ -134,3 +134,11 @@ Realiza a busca das snapshots da carteira
 GET http://localhost:8000/wallets/:walletId/snapshots HTTP/1.1
 Content-Type: application/json
 ```
+
+### Busca as posições da snapshots da carteira
+Realiza as posições da snapshot
+
+```http
+GET http://localhost:8000/wallets/:walletId/snapshots HTTP/1.1
+Content-Type: application/json
+```
