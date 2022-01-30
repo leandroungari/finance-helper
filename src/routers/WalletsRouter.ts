@@ -5,8 +5,10 @@ import CreateSnapshotController from '../useCases/CreateSnapshotUseCase/CreateSn
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
 import ExtractOrdersController from '../useCases/ExtractOrdersUseCase/ExtractOrdersController'
+import GetAvailableSnapshotsController from '../useCases/GetAvailableSnapshotsUseCase/GetAvailableSnapshotsController'
 import GetOrdersOfAssetController from '../useCases/GetOrdersOfAssetUseCase/GetOrdersOfAssetController'
 import GetPositionsOfWalletController from '../useCases/GetPositionsOfWalletUseCase/GetPositionsOfWalletController'
+import GetSnapshotController from '../useCases/GetSnapshotUseCase/GetSnapshotController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
 import UpdateQuotesController from '../useCases/UpdateQuotesUseCase/UpdateQuotesController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
@@ -71,6 +73,18 @@ router.post('/:walletId/snapshots', async (req, res) => {
   const { date } = req.body
   const controller = new CreateSnapshotController()
   return await controller.handle(walletId, date)
+})
+
+router.get('/:walletId/snapshots', async (req, res) => {
+  const { walletId } = req.params
+  const controller = new GetAvailableSnapshotsController()
+  return await controller.handle(walletId)
+})
+
+router.get('/:walletId/snapshots/:date', async (req, res) => {
+  const { walletId, date } = req.params
+  const controller = new GetSnapshotController()
+  return await controller.handle(walletId, new Date(date))
 })
 
 

@@ -126,3 +126,11 @@ Realiza a atualização das cotações das posições de ativos não encerradas 
 PATCH http://localhost:8000/wallets/:walletId/positions/price HTTP/1.1
 Content-Type: application/json
 ```
+
+### Busca de snapshots disponíveis por carteira
+Realiza a busca das snapshots da carteira
+
+```http
+GET http://localhost:8000/wallets/:walletId/snapshots HTTP/1.1
+Content-Type: application/json
+```

@@ -76,7 +76,8 @@ export default class SnapshotsRepositoryPostgres
         },
         orderBy: {
           date: 'asc'
-        }
+        },
+        distinct: 'date'
       })
       items.forEach((item) => {
         dates.push(item.date)
