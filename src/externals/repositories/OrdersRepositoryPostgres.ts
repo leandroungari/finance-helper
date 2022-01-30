@@ -6,7 +6,7 @@ import OrdersRepository from './OrdersRepository'
 export default class OrdersRepositoryPostgres
   extends Postgres
   implements OrdersRepository {
-  
+
   async getOrdersInInterval(walletId: string, from: Date, to: Date): Promise<Order[]> {
     const orders: Order[] = []
     try {
@@ -21,20 +21,55 @@ export default class OrdersRepositoryPostgres
       })
       items.forEach((item) => {
         const order = new Order(
-          item.description, 
-          item.unitaryPrice, 
-          item.quantity, 
-          item.totalPrice, 
+          item.description,
+          item.unitaryPrice,
+          item.quantity,
+          item.totalPrice,
           item.currency,
-          item.type === 'B' ? 'buy' : 'sell', 
+          item.type === 'B' ? 'buy' : 'sell',
           item.date.toISOString().split('T')[0]
         )
         orders.push(order)
       })
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Fail to retrieve the orders: ${error}`)
     }
     return orders
+  }
+
+  async getOrdersByTickerInInterval(walletId: string, ticker: string, from?: Date, to?: Date): Promise<Order[]> {
+    if (from && to) {
+      const orders: Order[] = []
+      try {
+        const items = await this.connection.order.findMany({
+          where: {
+            wallet: walletId,
+            description: ticker,
+            date: {
+              gt: from,
+              lte: to
+            }
+          }
+        })
+        items.forEach((item) => {
+          const order = new Order(
+            item.description,
+            item.unitaryPrice,
+            item.quantity,
+            item.totalPrice,
+            item.currency,
+            item.type === 'B' ? 'buy' : 'sell',
+            item.date.toISOString().split('T')[0]
+          )
+          orders.push(order)
+        })
+      } catch (error) {
+        throw new Error(`Fail to retrieve the orders: ${error}`)
+      }
+      return orders
+    } else {
+      return await this.getOrdersByTicker(walletId, ticker)
+    }
   }
 
   async getOrdersByTicker(walletId: string, ticker: string): Promise<Order[]> {
@@ -49,15 +84,15 @@ export default class OrdersRepositoryPostgres
         }
       })
       result = items.map((item) => new Order(
-        item.description, 
-        item.unitaryPrice, 
-        item.quantity, 
+        item.description,
+        item.unitaryPrice,
+        item.quantity,
         item.totalPrice,
         item.currency,
-        item.type === 'B' ? 'buy' : 'sell', 
+        item.type === 'B' ? 'buy' : 'sell',
         item.date.toISOString().split('T')[0]
       ))
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Cannot retrieve the orders of asset ${walletId}/${ticker}: ${error}`)
     } finally {
       this.disconnect()
@@ -76,7 +111,7 @@ export default class OrdersRepositoryPostgres
           description: to
         }
       })
-    } catch(error) {
+    } catch (error) {
       throw new Error(`Cannot update the ticker of orders from ${from} to ${to}: ${error}`)
     } finally {
       this.disconnect()

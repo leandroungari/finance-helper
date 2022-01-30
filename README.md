@@ -80,7 +80,7 @@ Content-Type: application/json
 Fazer o carregamento de uma ou mais notas de corretagem.
 
 ```http
-POST http://localhost:8000/wallets/:walletId}/brokage-notes/upload HTTP/1.1
+POST http://localhost:8000/wallets/:walletId/brokage-notes/upload HTTP/1.1
 
 #files
 notes[0] = 2019-09-12.pdf
@@ -91,11 +91,10 @@ notes[1] = 2019-10-11.pdf
 Extrai as ordens de uma nota, persiste a informação, atualiza a posição e retorna a lista de ordens.
 
 ```http
-POST http://localhost:8000/orders HTTP/1.1
+POST http://localhost:8000/wallets/:walletId/orders HTTP/1.1
 
 {
-  "date": "2019-07-08", /*data da nota de corretagem*/
-  "wallet": {{walletId}}
+  "date": "2019-07-08"
 }
 ```
 

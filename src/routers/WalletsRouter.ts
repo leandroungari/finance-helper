@@ -4,6 +4,8 @@ import Router from '../core/Router'
 import CreateSnapshotController from '../useCases/CreateSnapshotUseCase/CreateSnapshotController'
 import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWalletController'
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
+import ExtractOrdersController from '../useCases/ExtractOrdersUseCase/ExtractOrdersController'
+import GetOrdersOfAssetController from '../useCases/GetOrdersOfAssetUseCase/GetOrdersOfAssetController'
 import GetPositionsOfWalletController from '../useCases/GetPositionsOfWalletUseCase/GetPositionsOfWalletController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
 import UpdateQuotesController from '../useCases/UpdateQuotesUseCase/UpdateQuotesController'
@@ -16,6 +18,27 @@ router.post('/', async (req, res) => {
   const controller = new CreateWalletController()
   return await controller.handle(data)
 })
+
+
+router.post('/:walletId/orders', async (req, res) => {
+  const { walletId } = req.params
+  const { date } = req.body
+  const controller = new ExtractOrdersController()
+  return await controller.handle(walletId, date)
+})
+
+
+router.get('/:walletId/orders/:ticker', async (req, res) => {
+  const { walletId, ticker } = req.params
+  const { from, to } = req.query
+  let fromDate: Date | undefined = undefined
+  let toDate: Date | undefined = undefined
+  if (from) fromDate = new Date(from.toString())
+  if (to) toDate = new Date(to.toString())
+  const controller = new GetOrdersOfAssetController()
+  return await controller.handle(walletId, ticker, fromDate, toDate)
+})
+
 
 router.get('/:walletId/positions', async (req, res) => {
   const { walletId } = req.params
