@@ -31,6 +31,7 @@ model Wallet {
   positions     Position[]
   notes         BrokageNotes[]
   snapshots     Snapshots[]
+  earnings      Earnings[]
 }
 
 
@@ -80,3 +81,13 @@ model Snapshots {
   @@unique([date, walletId, description])
 }
 
+model Earnings {
+  date                    DateTime    @db.Date
+  wallet                  Wallet      @relation(fields: [walletId], references: [id])
+  walletId                String
+  ticker                  String      @db.VarChar(30)
+  type                    String      @db.VarChar(10)
+  currency                String      @db.VarChar(8) @default("BRL")
+  value                   Float       @db.Real() @default(0)
+  @@unique([walletId, date, ticker, currency, value])
+}

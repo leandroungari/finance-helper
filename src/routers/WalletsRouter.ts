@@ -6,6 +6,7 @@ import CreateWalletController from '../useCases/CreateWalletUseCase/CreateWallet
 import ExtractOrdersFromPendingBrokageNotesController from '../useCases/ExtractOrdersFromPendingBrokageNotesUseCase/ExtractOrdersFromPendingBrokageNotesController'
 import ExtractOrdersController from '../useCases/ExtractOrdersUseCase/ExtractOrdersController'
 import GetAvailableSnapshotsController from '../useCases/GetAvailableSnapshotsUseCase/GetAvailableSnapshotsController'
+import GetEarningsFromExtractController from '../useCases/GetEarningsFromExtractUseCase/GetEarningFromExtractController'
 import GetOrdersOfAssetController from '../useCases/GetOrdersOfAssetUseCase/GetOrdersOfAssetController'
 import GetPositionsOfWalletController from '../useCases/GetPositionsOfWalletUseCase/GetPositionsOfWalletController'
 import GetSnapshotController from '../useCases/GetSnapshotUseCase/GetSnapshotController'
@@ -104,6 +105,18 @@ router.post('/:walletId/brokage-notes/upload', async (req, res) => {
     throw new BadRequest(`The request expects at least a brokage note.`)
   }
 })
+
+router.post('/:walletId/extract/upload', async (req, res) => {
+  const file = req.files?.extract
+  const { walletId } = req.params
+  if (file !== undefined && !Array.isArray(file)) {
+    const controller = new GetEarningsFromExtractController()
+    return await controller.handle(walletId, file)
+  } else {
+    throw new BadRequest(`The request expects at least a extract file (and only one).`)
+  }
+})
+
 
 
 export default router
