@@ -1,4 +1,4 @@
-import Order from './Order'
+import Order from './Orders/Order'
 import Wallet from './Wallet'
 
 export default class BrokageNote {

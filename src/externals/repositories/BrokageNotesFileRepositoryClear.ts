@@ -1,9 +1,14 @@
 import { UploadedFile } from 'express-fileupload'
 import { readFileSync } from 'fs'
 import pdf from 'pdf-parse'
-import Order, { OrderType } from '../../entities/Order'
+import Order, { OrderTypeCode } from '../../entities/Orders/Order'
+import PurchaseOrder from '../../entities/Orders/PurchaseOrder'
+import SaleOrder from '../../entities/Orders/SaleOrder'
 import Wallet from '../../entities/Wallet'
 import { FinancialProperties } from '../../useCases/ExtractOrdersUseCase/ExtractOrdersDTO'
+import CommonOrderMapper from '../mappers/CommonOrderMapper'
+import PurchaseOrderMapper from '../mappers/PurchaseOrderMapper'
+import SaleOrderMapper from '../mappers/SaleOrderMapper'
 import BrokageNotesFileRepository from './BrokageNotesFileRepository'
 import TickerMappingsRepository from './TickerMappingsRepository'
 import TickerMappingsRepositoryPostgres from './TickerMappingsRepositoryPostgres'
@@ -12,9 +17,14 @@ export default class BrokageNotesFileRepositoryClear
   implements BrokageNotesFileRepository {
 
   private tickerMappingsRepository: TickerMappingsRepository
+  private orderMappers: { [key: string]: CommonOrderMapper<PurchaseOrder | SaleOrder> }
 
   constructor() {
     this.tickerMappingsRepository = new TickerMappingsRepositoryPostgres()
+    this.orderMappers = {
+      'B': new PurchaseOrderMapper(),
+      'S': new SaleOrderMapper()
+    }
   }
 
   private static readonly UNUSED_EXPRESSIONS = [
@@ -51,31 +61,30 @@ export default class BrokageNotesFileRepositoryClear
 
   private async extractOrderFromRows(rows: string[], date: string) {
     const orders: Order[] = []
-    for(const row of rows) {
+    for (const row of rows) {
       const item = await this.extractOrderFromRow(row, date)
       orders.push(item)
     }
     return orders
   }
 
-  private async extractOrderFromRow(row: string, date: string): Promise<Order> {
+  private async extractOrderFromRow(row: string, date: string): Promise<PurchaseOrder | SaleOrder> {
     const type = this.identifyOrderType(row)
     const cleanedRow = this.cleanUnusedExpresssion(row)
     const properties = await this.getFinancialProperties(cleanedRow)
-    return new Order(
-      properties.description,
-      properties.unitaryPrice,
-      properties.quantity,
-      properties.totalPrice,
-      BrokageNotesFileRepositoryClear.DEFAULT_CURRENCY,
-      type,
-      date,
-    )
+    const order = this.orderMappers[type].from({
+      currency: BrokageNotesFileRepositoryClear.DEFAULT_CURRENCY,
+      date: new Date(date),
+      description: properties.description,
+      type: <OrderTypeCode> (type === 'buy' ? 'B' : 'S'),
+      quantity: properties.quantity,
+      unitaryPrice: properties.unitaryPrice
+    })
+    if (order instanceof PurchaseOrder || order instanceof SaleOrder) return order
+    throw new Error('Incorrect type of order')
   }
 
-
-
-  private identifyOrderType(row: string): OrderType {
+  private identifyOrderType(row: string) {
     return row.startsWith('C') ? 'buy' : 'sell'
   }
 

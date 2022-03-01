@@ -1,14 +1,39 @@
-import Order from '../../entities/Order'
+import AdjustmentPositionOrder from '../../entities/Orders/AdjustmentPositionOrder'
+import BonusOrder from '../../entities/Orders/BonusOrder'
+import NewPositionOrder from '../../entities/Orders/NewPositionOrder'
+import Order, { OrderTypeCode } from '../../entities/Orders/Order'
+import PurchaseOrder from '../../entities/Orders/PurchaseOrder'
+import SaleOrder from '../../entities/Orders/SaleOrder'
 import Wallet from '../../entities/Wallet'
+import AdjustmentPositionOrderMapper from '../mappers/AdjustmentOrderMapper'
+import BonusOrderMapper from '../mappers/BonusOrderMapper'
+import NewPositionOrderMapper from '../mappers/NewPositionOrderMapper'
+import OrderMapper from '../mappers/OrderMapper'
+import PurchaseOrderMapper from '../mappers/PurchaseOrderMapper'
+import SaleOrderMapper from '../mappers/SaleOrderMapper'
 import Postgres from './connection/Postgres'
 import OrdersRepository from './OrdersRepository'
+import { Order as OrderDB } from '@prisma/client'
 
 export default class OrdersRepositoryPostgres
   extends Postgres
   implements OrdersRepository {
 
+  private orderMappers: { [key: string]: OrderMapper<Order> }
+
+  constructor() {
+    super()
+    this.orderMappers = {
+      'B': new PurchaseOrderMapper(),
+      'S': new SaleOrderMapper(),
+      'N': new NewPositionOrderMapper(),
+      'O': new BonusOrderMapper(),
+      'A': new AdjustmentPositionOrderMapper()
+    }
+  }
+
   async getOrdersInInterval(walletId: string, from: Date, to: Date): Promise<Order[]> {
-    const orders: Order[] = []
+    let orders: Order[] = []
     try {
       const items = await this.connection.order.findMany({
         where: {
@@ -19,27 +44,29 @@ export default class OrdersRepositoryPostgres
           }
         }
       })
-      items.forEach((item) => {
-        const order = new Order(
-          item.description,
-          item.unitaryPrice,
-          item.quantity,
-          item.totalPrice,
-          item.currency,
-          item.type === 'B' ? 'buy' : 'sell',
-          item.date.toISOString().split('T')[0]
-        )
-        orders.push(order)
-      })
+      orders = items.map((item) => this.convertItemToOrder(item))
     } catch (error) {
       throw new Error(`Fail to retrieve the orders: ${error}`)
     }
     return orders
   }
 
+  private convertItemToOrder(item: OrderDB) {
+    return this.orderMappers[item.type].from({
+      date: item.date,
+      description: item.description,
+      currency: item.currency ?? undefined,
+      quantity: item.quantity ?? undefined,
+      rate: item.rate ?? undefined,
+      unitaryPrice: item.unitaryPrice ?? undefined,
+      totalPrice: item.totalPrice ?? undefined,
+      type: <OrderTypeCode>item.type
+    })
+  }
+
   async getOrdersByTickerInInterval(walletId: string, ticker: string, from?: Date, to?: Date): Promise<Order[]> {
     if (from && to) {
-      const orders: Order[] = []
+      let orders: Order[] = []
       try {
         const items = await this.connection.order.findMany({
           where: {
@@ -51,18 +78,7 @@ export default class OrdersRepositoryPostgres
             }
           }
         })
-        items.forEach((item) => {
-          const order = new Order(
-            item.description,
-            item.unitaryPrice,
-            item.quantity,
-            item.totalPrice,
-            item.currency,
-            item.type === 'B' ? 'buy' : 'sell',
-            item.date.toISOString().split('T')[0]
-          )
-          orders.push(order)
-        })
+        orders = items.map((item) => this.convertItemToOrder(item))
       } catch (error) {
         throw new Error(`Fail to retrieve the orders: ${error}`)
       }
@@ -83,15 +99,7 @@ export default class OrdersRepositoryPostgres
           date: 'asc'
         }
       })
-      result = items.map((item) => new Order(
-        item.description,
-        item.unitaryPrice,
-        item.quantity,
-        item.totalPrice,
-        item.currency,
-        item.type === 'B' ? 'buy' : 'sell',
-        item.date.toISOString().split('T')[0]
-      ))
+      result = items.map((item) => this.convertItemToOrder(item))
     } catch (error) {
       throw new Error(`Cannot retrieve the orders of asset ${walletId}/${ticker}: ${error}`)
     } finally {
@@ -120,15 +128,7 @@ export default class OrdersRepositoryPostgres
   }
 
   async save(wallet: Wallet, orders: Order[]): Promise<boolean> {
-    const items = orders.map((element) => ({
-      date: new Date(element.getDate()),
-      description: element.getDescription(),
-      quantity: element.getQuantity(),
-      unitaryPrice: element.getUnitaryPrice(),
-      totalPrice: element.getTotalPrice(),
-      type: element.getType() === 'buy' ? 'B' : 'S',
-      wallet: wallet.getId()
-    }))
+    const items = orders.map((order) => this.orderMappers[order.getType()].to(order))
     try {
       const { count } = await this.connection.order.createMany({ data: items })
       if (count === 0) {

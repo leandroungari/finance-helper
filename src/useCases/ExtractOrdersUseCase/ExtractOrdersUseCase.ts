@@ -1,4 +1,4 @@
-import Order from '../../entities/Order'
+import Order from '../../entities/Orders/Order'
 import Wallet from '../../entities/Wallet'
 import BrokageNotesFileRepository from '../../externals/repositories/BrokageNotesFileRepository'
 import BrokageNotesRepository from '../../externals/repositories/BrokageNotesRepository'
@@ -33,14 +33,7 @@ export default class ExtractOrdersUseCase {
     wallet.setPositions(positions)
     if (wallet.validate()) {
       for (const order of orders) {
-        const { isNewInvestiment, position } = wallet.addNewInvestment(
-          order.getDescription(), 
-        order.getQuantity(), 
-        order.getUnitaryPrice(),
-        order.getCurrency(),
-        order.getType(),
-        new Date(order.getDate())
-        )
+        const { isNewInvestiment, position } = wallet.addNewInvestment(order)
         if (isNewInvestiment) {
           await this.positionsRepository.save(wallet.getId(), position)
         } else {

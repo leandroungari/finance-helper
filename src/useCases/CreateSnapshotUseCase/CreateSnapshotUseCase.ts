@@ -1,4 +1,4 @@
-import Order from '../../entities/Order'
+import Order from '../../entities/Orders/Order'
 import Wallet from '../../entities/Wallet'
 import OrdersRepository from '../../externals/repositories/OrdersRepository'
 import SnapshotsRepository from '../../externals/repositories/SnapshotsRepository'
@@ -25,16 +25,7 @@ export default class CreateSnapshotUseCase {
   }
 
   addOrdersToWallet(wallet: Wallet, orders: Order[]) {
-    orders.forEach((order) => {
-      wallet.addNewInvestment(
-        order.getDescription(), 
-        order.getQuantity(),
-        order.getUnitaryPrice(),
-        order.getCurrency(),
-        order.getType(),
-        new Date(order.getDate())
-      )
-    })
+    orders.forEach((order) => wallet.addNewInvestment(order))
     return wallet
   }
 

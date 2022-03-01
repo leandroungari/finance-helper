@@ -1,4 +1,4 @@
-import Order from '../../entities/Order'
+import Order from '../../entities/Orders/Order'
 import Wallet from '../../entities/Wallet'
 
 export default interface OrdersRepository {

@@ -11,6 +11,7 @@ import GetOrdersOfAssetController from '../useCases/GetOrdersOfAssetUseCase/GetO
 import GetPositionsOfWalletController from '../useCases/GetPositionsOfWalletUseCase/GetPositionsOfWalletController'
 import GetSnapshotController from '../useCases/GetSnapshotUseCase/GetSnapshotController'
 import MergePositionsController from '../useCases/MergePositionsUseCase/MergePositionsController'
+import RegisterStockBonusController from '../useCases/RegisterStockBonusUseCase/RegisterStockBonusController'
 import UpdateQuotesController from '../useCases/UpdateQuotesUseCase/UpdateQuotesController'
 import UploadBrokageNotesController from '../useCases/UploadBrokageNotesUseCase/UploadBrokageNotesController'
 
@@ -115,6 +116,14 @@ router.post('/:walletId/extract/upload', async (req, res) => {
   } else {
     throw new BadRequest(`The request expects at least a extract file (and only one).`)
   }
+})
+
+router.post('/:walletId/positions/:ticker/bonus', async (req, res) => {
+  const { walletId, ticker } = req.params
+  const {  averagePrice, date, currency, quantity } = req.body
+  const controller = new RegisterStockBonusController()
+  const data = { averagePrice, date, currency, quantity, ticker }
+  return await controller.handle(walletId, data)
 })
 
 

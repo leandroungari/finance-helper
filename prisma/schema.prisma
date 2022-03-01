@@ -15,10 +15,11 @@ model Order {
   wallet        String      @db.VarChar(30) @default("")
   type          String      @db.Char()
   description   String      @db.VarChar(30)
-  quantity      Float       @db.Real
-  unitaryPrice  Float       @db.Real
-  totalPrice    Float       @db.Real
-  currency      String      @db.VarChar(8) @default("BRL")
+  quantity      Float?      @db.Real
+  unitaryPrice  Float?      @db.Real
+  totalPrice    Float?      @db.Real
+  currency      String?     @db.VarChar(8)
+  rate          Float?      @db.Real
   date          DateTime    @db.Date
   createAt      DateTime?   @db.Timestamp() @default(now())
   updateAt      DateTime?   @db.Timestamp()

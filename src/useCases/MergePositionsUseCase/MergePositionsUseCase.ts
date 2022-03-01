@@ -18,7 +18,7 @@ export default class MergePositionsUseCase {
     const orders = await this.ordersRepository.getOrdersByTicker(walletId, to)
     const wallet = new Wallet(walletId)
     wallet.setPositions(positions)
-    const newPosition = wallet.recalculatePosition(to, orders)
+    const newPosition = wallet.recalculatePosition(orders)
     if (wallet.contains(to)) {
       await this.positionsRepository.update(walletId, newPosition)
     } else if (newPosition.getQuantity() > 0) {
